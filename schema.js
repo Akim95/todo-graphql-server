@@ -9,7 +9,7 @@ import {
 } from 'graphql/type';
 
 // data
-import { Todos } from './data';
+import { Todos } from './connectors';
 
 // todo type
 const TodoType = new GraphQLObjectType({
@@ -34,7 +34,7 @@ const RootQuery = new GraphQLObjectType({
     todos: {
       type: new GraphQLList(TodoType),
       resolve() {
-        return Todos;
+        return Todos.findAll({ order: 'createdAt DESC' });
       },
     },
   }),
@@ -56,7 +56,7 @@ const RootMutation = new GraphQLObjectType({
           task: args.task,
           completed: false,
         };
-        Todos.push(todo);
+        Todos.create(todo);
         return todo;
       },
     },
