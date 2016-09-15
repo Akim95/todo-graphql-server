@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 
 // create sql connection
-const db = new Sequelize('Todos', 'username', 'password', {
+const db = new Sequelize('Todos', 'root', '', {
   host: 'localhost',
   dialect: 'mariadb',
 });
@@ -18,6 +18,15 @@ const TodoModel = db.define('todos', {
   completed: {
     type: Sequelize.BOOLEAN,
   },
+});
+
+// create initial data and remove all data after restart server
+db.sync().then(() => {
+  TodoModel.create({
+    id: 1,
+    task: 'demo data',
+    completed: false,
+  });
 });
 
 const Todos = db.models.todos;
