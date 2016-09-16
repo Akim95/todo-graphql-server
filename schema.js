@@ -1,70 +1,35 @@
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLNonNull,
-} from 'graphql/type';
-
-// data
+import { buildSchema } from 'graphql';
 import { Todos } from './data';
 
-// todo type
-const TodoType = new GraphQLObjectType({
-  name: 'Todo',
-  fields: () => ({
-    id: {
-      type: GraphQLInt,
-    },
-    task: {
-      type: GraphQLString,
-    },
-    completed: {
-      type: GraphQLBoolean,
-    },
-  }),
-});
+const schema = buildSchema(`
+  type TodoType {
+    _id: Int
+    task: String
+    completed: Boolean
+  }
+  type Query {
+    todos: [TodoType]
+  }
+  type Mutation {
+    createTodo(_id: Int!, task: String!): TodoType
+  }
+  `);
 
-// root query
-const RootQuery = new GraphQLObjectType({
-  name: 'RootQuery',
-  fields: () => ({
-    todos: {
-      type: new GraphQLList(TodoType),
-      resolve() {
-        return Todos;
-      },
+const root = {
+    // eslint-disable-next-line
+    todos: () => {
+      return Todos;
     },
-  }),
-});
-
-// root mutation
-const RootMutation = new GraphQLObjectType({
-  name: 'RootMutation',
-  fields: {
-    createTodo: {
-      type: TodoType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLInt) },
-        task: { type: new GraphQLNonNull(GraphQLString) },
-      },
-      resolve(root, args) {
-        const todo = {
-          id: args.id,
-          task: args.task,
-          completed: false,
-        };
-        Todos.push(todo);
-        return todo;
-      },
+    // eslint-disable-next-line
+    createTodo: (args) => {
+      const todo = {
+        _id: args._id,
+        task: args.task,
+        completed: false,
+      };
+      Todos.push(todo);
+      return todo;
     },
-  },
-});
+};
 
-// export schema
-export default new GraphQLSchema({
-  query: RootQuery,
-  mutation: RootMutation,
-});
+export { schema, root };
