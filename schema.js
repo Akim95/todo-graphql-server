@@ -9,7 +9,6 @@ const schema = buildSchema(`
   }
   type Query {
     todos: [TodoType]
-    hello: String
   }
   type Mutation {
     createTodo(id: Int!, task: String!): TodoType
